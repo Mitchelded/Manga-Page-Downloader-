@@ -12,7 +12,7 @@ If you're a manga, manhwa, or similar content enthusiast, the Manga Page Downloa
 - [Contributing](#contributing)
 - [License](#license)
 
-# Introduction 👋
+<a name="Introduction"></a> 
 
 Do you find yourself spending hours manually saving manga pages one by one? Worry no more! The Manga Page Downloader is designed with manga lovers like you in mind. Whether it's manga, manhwa, or any similar content, this tool streamlines the process, allowing you to focus on enjoying your collection rather than tedious downloading.
 
