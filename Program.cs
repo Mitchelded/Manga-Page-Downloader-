@@ -5,11 +5,34 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using Newtonsoft.Json;
 
 namespace ImageDownloader
 {
     class ImageDownloader
     {
+        private static string ConfigFileName = "config.json";
+
+        public class Config
+        {
+            public string SavePath { get; set; }
+        }
+
+        static Config LoadConfig()
+        {
+            if (File.Exists(ConfigFileName))
+            {
+                string configJson = File.ReadAllText(ConfigFileName);
+                return JsonConvert.DeserializeObject<Config>(configJson);
+            }
+            return new Config();
+        }
+        static void SaveConfig(Config config)
+        {
+            string configJson = JsonConvert.SerializeObject(config, Formatting.Indented);
+            File.WriteAllText(ConfigFileName, configJson);
+        }
+
         // Asynchronous method to download images from a webpage
         private static async Task DownloadImagesAsync(string url, string targetSubstring = null)
         {
@@ -32,7 +55,17 @@ namespace ImageDownloader
                     // Find the folder name element on the webpage
                     var folderNameElement = driver.FindElement(By.CssSelector("#thema_wrapper > div > div > div > div.view-wrap > h1"));
                     string folderName = CleanFileName(folderNameElement.Text); // Clean folder name
-                    string baseFolderPath = "C:\\Users\\trety\\Downloads\\qq"; // Base folder path
+
+                    Config config = LoadConfig(); // Загрузить конфигурацию
+
+                    if (string.IsNullOrEmpty(config.SavePath))
+                    {
+                        Console.Write("Enter the default save path: ");
+                        config.SavePath = Console.ReadLine();
+                        SaveConfig(config); // Сохранить конфигурацию
+                    }
+
+                    string baseFolderPath = config.SavePath; // Base folder path
                     folderPath = Path.Combine(baseFolderPath, folderName); // Combine paths
                     Directory.CreateDirectory(folderPath); // Create directory if it doesn't exist
                 }
@@ -88,52 +121,73 @@ namespace ImageDownloader
         // Main entry point of the program
         static async Task Main(string[] args)
         {
-            Console.Write("Choose a site for downloading character images\n" +
-                          "1) funbe274.com\n" +
-                          "2) mangaread.org\n" +
-                          "3) Other\n");
-
-            int choose;
-            while (true)
+            try
             {
-                Console.Write("Input number: ");
-                if (!int.TryParse(Console.ReadLine(), out choose) || (choose != 1 && choose != 2))
+                Console.Write("Choose a site for downloading character images\n" +
+                              "1) funbe274.com\n" +
+                              "2) mangaread.org\n" +
+                              "3) Other\n" +
+                              "4) Clear saved path\n");  // Added an option to clear the path
+
+                int choose;
+                while (true)
                 {
-                    Console.WriteLine("Incorrect input");
+                    Console.Write("Input number: ");
+                    if (!int.TryParse(Console.ReadLine(), out choose) || (choose != 1 && choose != 2))
+                    {
+                        Console.WriteLine("Incorrect input");
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
-                else
+
+                string url;
+
+                if (choose == 1)
                 {
-                    break;
+                    url = "https://funbe274.com/";
+                    string targetSubstring = "data/file/wtoon/";
+                    await DownloadImagesAsync(url, targetSubstring);
                 }
+                else if (choose == 2)
+                {
+                    url = "https://www.mangaread.org/";
+                    string targetSubstring = "wp-content/uploads/WP-manga/data";
+                    await DownloadImagesAsync(url, targetSubstring);
+                }
+                else if (choose == 3)
+                {
+                    Console.Write("Input your link: ");
+                    url = Console.ReadLine();
+                    Console.WriteLine("Do you know the part of the link that leads directly to the image " +
+                                      "(for example, if you have a link like https://funbe274.com/data/file/wtoon/16584682143624.jpeg then type /data/file/wtoon/)," +
+                                      " if you don't know, just press enter");
+                    string targetSubstring = Console.ReadLine();
+
+                    await DownloadImagesAsync(url, targetSubstring);
+                }
+                else if (choose == 4) // Added "Clear saved path" selection processing
+                {
+                    Config config = LoadConfig();
+                    config.SavePath = null;  // Clear the saved path
+                    SaveConfig(config);      // Save the modified configuration
+                    Console.WriteLine("Saved path cleared!");
+                }
+
+
+                Console.WriteLine("Image download completed!");
             }
-
-            string url;
-
-            if (choose == 1)
+            catch (Exception ex)
             {
-                url = "https://funbe274.com/";
-                string targetSubstring = "data/file/wtoon/";
-                await DownloadImagesAsync(url, targetSubstring);
+                Console.WriteLine($"An error occurred: {ex.Message}");
             }
-            else if (choose == 2)
+            finally
             {
-                url = "https://www.mangaread.org/";
-                string targetSubstring = "wp-content/uploads/WP-manga/data";
-                await DownloadImagesAsync(url, targetSubstring);
+                Console.WriteLine("Press any key to exit...");
+                Console.ReadKey();
             }
-            else if (choose == 3)
-            {
-                Console.Write("Input your link: ");
-                url = Console.ReadLine();
-                Console.WriteLine("Do you know the part of the link that leads directly to the image " +
-                                  "(for example, if you have a link like https://funbe274.com/data/file/wtoon/16584682143624.jpeg then type /data/file/wtoon/)," +
-                                  " if you don't know, just press enter");
-                string targetSubstring = Console.ReadLine();
-
-                await DownloadImagesAsync(url, targetSubstring);
-            }
-
-            Console.ReadKey();
         }
     }
 }
