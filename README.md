@@ -10,7 +10,7 @@ If you're a manga, manhwa, or similar content enthusiast, the Manga Page Downloa
 - [Supported Sites](#supported-sites)
 - [Custom URLs](#custom-urls)
 - [Contributing](#contributing)
-- [License](#license)
+- [Providing Feedback](#providing-feedback)
 
 <a name="Introduction"></a> 
 ## Introduction 👋
@@ -53,6 +53,9 @@ Have a favorite manga site that's not on the list? No problem! Choose option `3`
 ## Contributing 🤝
 
 Your contributions are invaluable in enhancing this tool for the manga community. If you're passionate about improving the Manga Page Downloader, feel free to fork this repository, make your enhancements, and submit a pull request. Together, we can make manga collection even more enjoyable for everyone!
+<a name="Providing Feedback"></a> 
+## Providing Feedback 📢
+Your feedback is our North Star! As a beta user, you're at the forefront of shaping this tool's evolution. Use the "Feedback" feature in the beta application to share your insights, report issues, and suggest enhancements. Together, we'll craft the ultimate manga collection experience.
 
 ---
 
