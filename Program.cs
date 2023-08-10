@@ -168,7 +168,7 @@ namespace ImageDownloader
 
                     await DownloadImagesAsync(url, targetSubstring);
                 }
-                else if (choose == 4) // Added "Clear saved path" selection processing
+                else if (choose == 4)  // Added "Clear saved path" selection processing
                 {
                     Config config = LoadConfig();
                     config.SavePath = null;  // Clear the saved path
